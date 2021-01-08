@@ -63,7 +63,9 @@ else
   echo "---"
 
   echo "Be sure we do not add node and other specific files needed only for development"
+  pwd
   composer install --no-dev
+  compose dump-autoload
   rm -rf vendor/composer/installers
   rm -rf coverage.clover
   rm -rf ocular.phar
