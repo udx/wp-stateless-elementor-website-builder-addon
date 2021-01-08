@@ -24,11 +24,15 @@
       "@composer install",
       "./vendor/bin/phpunit --prepend tests/prepend.php tests/ --testdox"
     ],
-    "build": [
+    "release": [
       "@composer install --no-dev",
       "rm -rf composer.lock",
-      "rm -rf test",
-      "sh build"
+      "rm -rf tests",
+      "sh build.sh"
     ]
+  },
+  "scripts-descriptions": {
+    "test": "Run all tests.",
+    "release": "Release a new plugin version. Example: `composer release 1.2.1`"
   }
 }
