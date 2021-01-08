@@ -26,8 +26,6 @@
     ],
     "release": [
       "@composer install --no-dev",
-      "rm -rf composer.lock",
-      "rm -rf tests",
       "sh build.sh"
     ]
   },
