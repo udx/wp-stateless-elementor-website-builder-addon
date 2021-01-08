@@ -63,6 +63,7 @@ else
   echo "---"
 
   echo "Be sure we do not add node and other specific files needed only for development"
+  @composer install --no-dev
   rm -rf vendor/composer/installers
   rm -rf coverage.clover
   rm -rf ocular.phar

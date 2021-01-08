@@ -25,7 +25,6 @@
       "./vendor/bin/phpunit --prepend tests/prepend.php tests/ --testdox"
     ],
     "release": [
-      "@composer install --no-dev",
       "sh build.sh"
     ]
   },
