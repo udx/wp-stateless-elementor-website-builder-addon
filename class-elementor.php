@@ -43,11 +43,13 @@ class Elementor extends Compatibility {
         var_dump($name);
         var_dump($url);
         if ($name != $url) {
+          print_r('Name != URL');
           $absolutePath = $wp_uploads_dir['basedir'] . '/' . $name;
           $name = apply_filters('wp_stateless_file_name', $name, 0);
           do_action('sm:sync::syncFile', $name, $absolutePath);
 
           $mode = ud_get_stateless_media()->get('sm.mode');
+          
           var_dump($mode);
           if ($mode && !in_array($mode, ['disabled', 'backup'])) {
             $url = ud_get_stateless_media()->get_gs_host() . '/' . $name;
@@ -56,6 +58,7 @@ class Elementor extends Compatibility {
       }
     } catch (\Exception $e) {
       // @todo maybe log the exception.
+      print_r($e);
     }
 
     return $url;
