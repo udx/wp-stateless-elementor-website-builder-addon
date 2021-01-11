@@ -55,6 +55,18 @@ class ClassElementorTest extends TestCase {
     $this->assertEquals(ud_get_stateless_media()->get_gs_host() . '/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', null, null));
   }
 
+  public function testShouldDeleteElementorFiles() {
+  }
+
+  public function testShouldDeleteCssFiles() {
+  }
+
+  public function testShouldDeleteGlobalCss() {
+  }
+
+  public function testShouldFilterCssFile() {
+  }
+
   public function add_filter() {
   }
 
