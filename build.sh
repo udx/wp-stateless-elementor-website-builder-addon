@@ -66,6 +66,8 @@ else
   pwd
   composer install --no-dev
   composer dump-autoload
+  rm -rf readme.md
+  rm -rf .github
   rm -rf .gitignore
   rm -rf vendor/composer/installers
   rm -rf coverage.clover
