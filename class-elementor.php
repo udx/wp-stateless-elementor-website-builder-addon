@@ -46,6 +46,7 @@ class Elementor extends Compatibility {
           do_action('sm:sync::syncFile', $name, $absolutePath);
 
           $mode = ud_get_stateless_media()->get('sm.mode');
+          var_dump($mode);
           if ($mode && !in_array($mode, ['disabled', 'backup'])) {
             $url = ud_get_stateless_media()->get_gs_host() . '/' . $name;
           }
