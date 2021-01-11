@@ -40,6 +40,8 @@ class Elementor extends Compatibility {
       if (strpos($url, 'elementor/') !== false) {
         $wp_uploads_dir = wp_get_upload_dir();
         $name = str_replace($wp_uploads_dir['baseurl'] . '/', '', $url);
+        var_dump($name);
+        var_dump($url);
         if ($name != $url) {
           $absolutePath = $wp_uploads_dir['basedir'] . '/' . $name;
           $name = apply_filters('wp_stateless_file_name', $name, 0);
