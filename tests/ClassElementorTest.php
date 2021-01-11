@@ -52,7 +52,6 @@ class ClassElementorTest extends TestCase {
     $this->assertEquals('https://test.test/uploads/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', null, null));
 
     ud_get_stateless_media()->set('sm.mode', 'stateless');
-    var_dump(ud_get_stateless_media()->get('sm.mode'));
     $this->assertEquals(ud_get_stateless_media()->get_gs_host() . '/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', 1, 1));
   }
 
@@ -99,7 +98,8 @@ function do_action($a, ...$b) {
 
 function wp_get_upload_dir() {
   return [
-    'baseurl' => 'https://test.test/uploads'
+    'baseurl' => 'https://test.test/uploads',
+    'basedir' => '/var/www/uploads'
   ];
 }
 
