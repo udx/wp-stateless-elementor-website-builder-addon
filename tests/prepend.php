@@ -9,8 +9,8 @@ class WPStatelessStub {
 
   private static $instance = null;
 
-  public static function instance(): self {
-    return self::$instance ? self::$instance : self::$instance = new self;
+  public static function instance() {
+    return static::$instance ? static::$instance : static::$instance = new static;
   }
 
   public $options = [];
