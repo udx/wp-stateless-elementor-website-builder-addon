@@ -52,6 +52,7 @@ class ClassElementorTest extends TestCase {
     $this->assertEquals('https://test.test/uploads/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', null, null));
 
     ud_get_stateless_media()->set('sm.mode', 'stateless');
+    var_dump(ud_get_stateless_media()->get('sm.mode'));
     $this->assertEquals(ud_get_stateless_media()->get_gs_host() . '/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', null, null));
   }
 
