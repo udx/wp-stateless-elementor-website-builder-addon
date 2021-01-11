@@ -1,6 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
+use wpCloud\StatelessMedia\WPStatelessStub;
 use WPSL\Elementor\Elementor;
 
 /**
@@ -13,8 +14,10 @@ class ClassElementorTest extends TestCase {
   public function setUp(): void {
     self::$functions = $this->createPartialMock(
       ClassElementorTest::class,
-      ['add_filter', 'add_action']
+      ['add_filter', 'add_action', 'apply_filters', 'do_action']
     );
+
+    $this::$functions->method('apply_filters')->will($this->returnArgument(1));
   }
 
   public function testShouldInitModule() {
@@ -35,9 +38,33 @@ class ClassElementorTest extends TestCase {
     $elementor->module_init([]);
   }
 
+  public function testShouldSyncAndRewriteUrl() {
+    $elementor = new Elementor();
+
+    $this->assertEquals('https://test.test/test/test.test', $elementor->sync_rewrite_url('https://test.test/test/test.test', null, null));
+    $this::$functions->expects($this->exactly(2))
+      ->method('apply_filters')->with('wp_stateless_file_name');
+
+    $this::$functions->expects($this->exactly(2))
+      ->method('do_action')->with('sm:sync::syncFile');
+
+    ud_get_stateless_media()->set('sm.mode', 'disabled');
+    $this->assertEquals('https://test.test/uploads/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', null, null));
+
+    ud_get_stateless_media()->set('sm.mode', 'stateless');
+    $this->assertEquals(ud_get_stateless_media()->get_gs_host() . '/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', null, null));
+  }
+
   public function add_filter() {
   }
+
   public function add_action() {
+  }
+
+  public function apply_filters($a, $b) {
+  }
+
+  public function do_action($a, ...$b) {
   }
 }
 
@@ -47,4 +74,22 @@ function add_filter($a, $b, $c = 10, $d = 1) {
 
 function add_action($a, $b, $c = 10, $d = 1) {
   return ClassElementorTest::$functions->add_action($a, $b, $c, $d);
+}
+
+function apply_filters($a, $b) {
+  return ClassElementorTest::$functions->apply_filters($a, $b);
+}
+
+function do_action($a, ...$b) {
+  return ClassElementorTest::$functions->do_action($a, ...$b);
+}
+
+function wp_get_upload_dir() {
+  return [
+    'baseurl' => 'https://test.test/uploads'
+  ];
+}
+
+function ud_get_stateless_media() {
+  return WPStatelessStub::instance();
 }

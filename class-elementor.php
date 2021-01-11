@@ -31,11 +31,11 @@ class Elementor extends Compatibility {
   /**
    * Sync local elementor files to GCS.
    * @param $url
-   * @param $scheme
-   * @param $orig_scheme
+   * @param $_ Not used
+   * @param $__ Not used
    * @return string
    */
-  public function sync_rewrite_url($url, $scheme, $orig_scheme) {
+  public function sync_rewrite_url($url, $_, $__) {
     try {
       if (strpos($url, 'elementor/') !== false) {
         $wp_uploads_dir = wp_get_upload_dir();
@@ -45,7 +45,8 @@ class Elementor extends Compatibility {
           $name = apply_filters('wp_stateless_file_name', $name, 0);
           do_action('sm:sync::syncFile', $name, $absolutePath);
 
-          if (!in_array(ud_get_stateless_media()->get('sm.mode'), ['disabled', 'backup'])) {
+          $mode = ud_get_stateless_media()->get('sm.mode');
+          if ($mode && (!in_array($mode, ['disabled', 'backup']))) {
             $url = ud_get_stateless_media()->get_gs_host() . '/' . $name;
           }
         }
@@ -53,7 +54,7 @@ class Elementor extends Compatibility {
     } catch (\Exception $e) {
       // @todo maybe log the exception.
     }
-    // We are in filter so need to return the passed value.
+
     return $url;
   }
 
