@@ -27,7 +27,6 @@
     ]
   },
   "scripts-descriptions": {
-    "test": "Run all tests.",
-    "release": "Release a new plugin version. Example: `composer release 1.2.1`"
+    "test": "Run all tests."
   }
 }
