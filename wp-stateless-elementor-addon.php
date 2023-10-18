@@ -10,7 +10,7 @@
  * Author URI: https://udx.io
  * License: MIT
  * 
- * Copyright 2021 UDX (email: info@udx.io)
+ * Copyright 2023 UDX (email: info@udx.io)
  */
 
 namespace WPSL\Elementor;
