@@ -24,9 +24,6 @@
     "test": [
       "@composer install",
       "./vendor/bin/phpunit --prepend tests/prepend.php tests/ --testdox"
-    ],
-    "release": [
-      "sh build.sh"
     ]
   },
   "scripts-descriptions": {
