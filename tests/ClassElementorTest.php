@@ -1,6 +1,13 @@
 <?php
 
+namespace WPSL\Elementor;
+
 use PHPUnit\Framework\TestCase;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Brain\Monkey;
+use Brain\Monkey\Actions;
+use Brain\Monkey\Filters;
+use Brain\Monkey\Functions;
 use wpCloud\StatelessMedia\WPStatelessStub;
 use WPSL\Elementor\Elementor;
 
@@ -9,100 +16,131 @@ use WPSL\Elementor\Elementor;
  */
 class ClassElementorTest extends TestCase {
 
-  public static $functions;
+  // Adds Mockery expectations to the PHPUnit assertions count.
+  use MockeryPHPUnitIntegration;
+
+  const TEST_URL = 'https://test.test/elementor';
+  const UPLOADS_URL = self::TEST_URL . '/uploads';
+  const CSS_FILE = 'post-15.css';
+  const SRC_URL = self::UPLOADS_URL . '/' . self::CSS_FILE;
+  const DST_URL = WPStatelessStub::TEST_GS_HOST . '/' . self::CSS_FILE;
+  const TEST_UPLOAD_DIR = [
+    'baseurl' => self::UPLOADS_URL,
+    'basedir' => '/var/www/uploads'
+  ];
 
   public function setUp(): void {
-    self::$functions = $this->createPartialMock(
-      ClassElementorTest::class,
-      ['add_filter', 'add_action', 'apply_filters', 'do_action']
-    );
+		parent::setUp();
+		Monkey\setUp();
 
-    $this::$functions->method('apply_filters')->will($this->returnArgument(1));
+    // WP mocks
+    Functions\when('wp_get_upload_dir')->justReturn( self::TEST_UPLOAD_DIR );
+    Functions\when('wp_upload_dir')->justReturn( self::TEST_UPLOAD_DIR );
+    Functions\when('attachment_url_to_postid')->justReturn( 15 );
+        
+    // WP_Stateless mocks
+    Filters\expectApplied('wp_stateless_file_name')
+      ->andReturn( self::CSS_FILE );
+
+    Filters\expectApplied('wp_stateless_handle_root_dir')
+      ->andReturn( 'uploads' );
+
+    Functions\when('ud_get_stateless_media')->justReturn( WPStatelessStub::instance() );
   }
 
+  public function tearDown(): void {
+		Monkey\tearDown();
+		parent::tearDown();
+	}
+
   public function testShouldInitModule() {
-    self::$functions->expects($this->exactly(2))
-      ->method('add_filter')
-      ->withConsecutive(['set_url_scheme'], ['elementor/settings/general/success_response_data']);
-
-    self::$functions->expects($this->exactly(4))
-      ->method('add_action')
-      ->withConsecutive(
-        ['elementor/core/files/clear_cache'],
-        ['save_post'],
-        ['deleted_post'],
-        ['sm::pre::sync::nonMediaFiles']
-      );
-
     $elementor = new Elementor();
     $elementor->module_init([]);
+
+    self::assertNotFalse( has_action('elementor/core/files/clear_cache', [ $elementor, 'delete_elementor_files' ]) );
+    self::assertNotFalse( has_action('save_post', [ $elementor, 'delete_css_files' ]) );
+    self::assertNotFalse( has_action('deleted_post', [ $elementor, 'delete_css_files' ]) );
+    self::assertNotFalse( has_action('sm::pre::sync::nonMediaFiles', [ $elementor, 'filter_css_file' ]) );
+    
+    self::assertNotFalse( has_filter('set_url_scheme', [ $elementor, 'sync_rewrite_url' ]) );
+    self::assertNotFalse( has_filter('elementor/settings/general/success_response_data', [ $elementor, 'delete_global_css' ]) );
   }
 
   public function testShouldSyncAndRewriteUrl() {
     $elementor = new Elementor();
 
-    $this->assertEquals('https://test.test/test/test.test', $elementor->sync_rewrite_url('https://test.test/test/test.test', null, null));
-    $this::$functions->expects($this->exactly(2))
-      ->method('apply_filters')->with('wp_stateless_file_name');
+    Actions\expectDone('sm:sync::syncFile')->times(2);
 
-    $this::$functions->expects($this->exactly(2))
-      ->method('do_action')->with('sm:sync::syncFile');
+    $this->assertEquals(
+      self::DST_URL, 
+      $elementor->sync_rewrite_url(self::SRC_URL, 1, 1)
+    );
 
     ud_get_stateless_media()->set('sm.mode', 'disabled');
-    $this->assertEquals('https://test.test/uploads/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', null, null));
 
-    ud_get_stateless_media()->set('sm.mode', 'stateless');
-    $this->assertEquals(ud_get_stateless_media()->get_gs_host() . '/elementor/test.test', $elementor->sync_rewrite_url('https://test.test/uploads/elementor/test.test', 1, 1));
+    $this->assertEquals(
+      self::SRC_URL, 
+      $elementor->sync_rewrite_url(self::SRC_URL, 1, 1)
+    );
   }
 
   public function testShouldDeleteElementorFiles() {
+    $elementor = new Elementor();
+
+    Actions\expectDone('sm:sync::deleteFiles')->once();
+
+    $elementor->delete_elementor_files();
+
+    // Need any assertion, otherwise the test will be skipped
+    $this->assertTrue(true);
   }
 
   public function testShouldDeleteCssFiles() {
+    $elementor = new Elementor();
+
+    Functions\when('current_action')->justReturn( 'deleted_post' );
+
+    Actions\expectDone('sm:sync::deleteFile')
+      ->with(self::CSS_FILE)
+      ->once();
+
+    $elementor->delete_css_files(15, null, true);
+
+    // Need any assertion, otherwise the test will be skipped
+    $this->assertTrue(true);
   }
 
   public function testShouldDeleteGlobalCss() {
+    $elementor = new Elementor();
+
+    Actions\expectDone('sm:sync::deleteFile')
+      ->with(self::CSS_FILE)
+      ->once();
+
+    $this->assertEquals(
+      self::TEST_URL, 
+      $elementor->delete_global_css(self::TEST_URL, 15, null)
+    );
   }
 
   public function testShouldFilterCssFile() {
-  }
+    $elementor = new Elementor();
 
-  public function add_filter() {
-  }
+    /**
+     * To make this fully testable need to find the way to redefine file_put_contents and check result 
+     */
 
-  public function add_action() {
-  }
+    $elementor->filter_css_file(self::CSS_FILE, self::SRC_URL);
 
-  public function apply_filters($a, $b) {
-  }
-
-  public function do_action($a, ...$b) {
+    // Need any assertion, otherwise the test will be skipped
+    $this->assertTrue(true);
   }
 }
 
-function add_filter($a, $b, $c = 10, $d = 1) {
-  return ClassElementorTest::$functions->add_filter($a, $b, $c, $d);
+function file_exists() {
+  return true;
 }
 
-function add_action($a, $b, $c = 10, $d = 1) {
-  return ClassElementorTest::$functions->add_action($a, $b, $c, $d);
-}
-
-function apply_filters($a, $b) {
-  return ClassElementorTest::$functions->apply_filters($a, $b);
-}
-
-function do_action($a, ...$b) {
-  return ClassElementorTest::$functions->do_action($a, ...$b);
-}
-
-function wp_get_upload_dir() {
-  return [
-    'baseurl' => 'https://test.test/uploads',
-    'basedir' => '/var/www/uploads'
-  ];
-}
-
-function ud_get_stateless_media() {
-  return WPStatelessStub::instance();
+function file_get_contents() {
+  return ClassElementorTest::SRC_URL;
 }
