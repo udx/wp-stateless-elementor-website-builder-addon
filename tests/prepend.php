@@ -38,7 +38,15 @@ namespace wpCloud\StatelessMedia {
   
   class Utility {
     public static function add_media($a, $b, $c) {}
-  }  
+  }
+
+  class WP_Filesystem_Stub {
+    public function get_contents($path) {
+      return '';
+    }
+  
+    public function put_contents($path, $content) {}
+  }   
 };
 
 namespace Elementor\Core\Files\CSS {
