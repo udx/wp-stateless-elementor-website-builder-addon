@@ -8,7 +8,7 @@ Provides compatibility between the [Elementor Website Builder](https://wordpress
 
 ### Notes
 
-* Tested with Elementor Website Builder plugin version 3.17.3
+* Tested with Elementor Website Builder plugin version 3.18.3
 
 ### Support, Feedback, & Contribute
 
