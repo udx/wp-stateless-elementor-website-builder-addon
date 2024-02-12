@@ -1,6 +1,6 @@
 <?php
 
-namespace WPSL\Elementor;
+namespace SLCA\Elementor;
 
 use wpCloud\StatelessMedia\Compatibility;
 use wpCloud\StatelessMedia\Utility;

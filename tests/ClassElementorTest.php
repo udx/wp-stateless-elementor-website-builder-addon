@@ -1,6 +1,6 @@
 <?php
 
-namespace WPSL\Elementor;
+namespace SLCA\Elementor;
 
 use PHPUnit\Framework\TestCase;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -10,7 +10,6 @@ use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use wpCloud\StatelessMedia\WPStatelessStub;
 use wpCloud\StatelessMedia\WP_Filesystem_Stub;
-use WPSL\Elementor\Elementor;
 
 /**
  * Class ClassElementorTest
