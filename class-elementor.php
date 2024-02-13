@@ -1,12 +1,12 @@
 <?php
 
-namespace WPSL\Elementor;
+namespace SLCA\Elementor;
 
 use wpCloud\StatelessMedia\Compatibility;
 use wpCloud\StatelessMedia\Utility;
 
 /**
- * @todo make testable and test
+ * Class Elementor 
  */
 class Elementor extends Compatibility {
   protected $id = 'elementor';
@@ -79,7 +79,7 @@ class Elementor extends Compatibility {
     if ($update || current_action() === 'deleted_post') {
       $post_css = new \Elementor\Core\Files\CSS\Post($post_ID);
 
-      //      elementor/               css/                           'post-' . $post_id . '.css'
+      // elementor/ css/ 'post-' . $post_id . '.css'
       $name = $post_css::UPLOADS_DIR . $post_css::DEFAULT_FILES_DIR . $post_css->get_file_name();
       $name = apply_filters('wp_stateless_file_name', $name, 0);
 
@@ -97,12 +97,11 @@ class Elementor extends Compatibility {
   public function delete_global_css($success_response_data, $id, $data) {
     try {
       $post_css = new \Elementor\Core\Files\CSS\Global_CSS('global.css');
-      //      elementor/               css/                           'global.css'
+      // elementor/ css/ 'global.css'
       $name = $post_css::UPLOADS_DIR . $post_css::DEFAULT_FILES_DIR . $post_css->get_file_name();
       $name = apply_filters('wp_stateless_file_name', $name, 0);
       do_action('sm:sync::deleteFile', $name);
     } catch (\Exception $e) {
-      // @todo maybe log the exception.
     }
     // We are in filter so need to return the passed value.
     return $success_response_data;
@@ -116,7 +115,14 @@ class Elementor extends Compatibility {
     $upload_data = wp_upload_dir();
     if (!empty($upload_data) && file_exists($absolutePath)) {
       try {
-        $content = file_get_contents($absolutePath);
+        if ( !function_exists('WP_Filesystem') ) {
+          require_once(ABSPATH . 'wp-admin/includes/file.php');
+        }
+
+        WP_Filesystem();
+        global $wp_filesystem;
+
+        $content = $wp_filesystem->get_contents($absolutePath);
 
         if (!empty($upload_data['baseurl']) && !empty($content)) {
           $baseurl = preg_replace('/https?:\/\//', '', $upload_data['baseurl']);
@@ -139,7 +145,7 @@ class Elementor extends Compatibility {
 
           $content = preg_replace('/(https?:\/\/' . str_replace('/', '\/', $baseurl) . ')\/(.+?)(' . $file_ext . ')/i', $image_host . '/$2$3', $content);
          
-          file_put_contents($absolutePath, $content);
+          $wp_filesystem->put_contents($absolutePath, $content);
 
           preg_match('/post-(\d+).css/', $name, $match);
 

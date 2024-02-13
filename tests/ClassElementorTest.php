@@ -1,6 +1,6 @@
 <?php
 
-namespace WPSL\Elementor;
+namespace SLCA\Elementor;
 
 use PHPUnit\Framework\TestCase;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -9,7 +9,7 @@ use Brain\Monkey\Actions;
 use Brain\Monkey\Filters;
 use Brain\Monkey\Functions;
 use wpCloud\StatelessMedia\WPStatelessStub;
-use WPSL\Elementor\Elementor;
+use wpCloud\StatelessMedia\WP_Filesystem_Stub;
 
 /**
  * Class ClassElementorTest
@@ -141,6 +141,11 @@ function file_exists() {
   return true;
 }
 
-function file_get_contents() {
-  return ClassElementorTest::SRC_URL;
+function function_exists() {
+  return true;
+}
+
+function WP_Filesystem() {
+  global $wp_filesystem;
+  $wp_filesystem = new WP_Filesystem_Stub();
 }

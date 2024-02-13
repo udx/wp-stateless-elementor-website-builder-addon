@@ -3,7 +3,7 @@
         'name' => 'udx/wp-stateless-elementor-addon',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => 'a8770fb4dfbf84fab08b388387dce074afc79ccc',
+        'reference' => '3e0844b635a784de4b4cbda467dd45800f2434c7',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         'udx/wp-stateless-elementor-addon' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => 'a8770fb4dfbf84fab08b388387dce074afc79ccc',
+            'reference' => '3e0844b635a784de4b4cbda467dd45800f2434c7',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
