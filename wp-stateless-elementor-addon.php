@@ -8,7 +8,6 @@
  * Version: 0.0.1
  * Text Domain: slcaelementor
  * Author URI: https://udx.io
- * License: MIT
  * 
  * Copyright 2024 UDX (email: info@udx.io)
  */
