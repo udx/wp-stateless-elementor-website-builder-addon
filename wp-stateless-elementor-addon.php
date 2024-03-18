@@ -6,9 +6,9 @@
  * Description: Provides compatibility between the Elementor Website Builder and the WP-Stateless plugins.
  * Author: UDX
  * Version: 0.0.1
+ * License: GPL v2 or later
  * Text Domain: slcaelementor
  * Author URI: https://udx.io
- * License: MIT
  * 
  * Copyright 2024 UDX (email: info@udx.io)
  */
@@ -17,7 +17,7 @@ namespace SLCA\Elementor;
 
 add_action('plugins_loaded', function () {
   if (class_exists('wpCloud\StatelessMedia\Compatibility')) {
-    require_once 'vendor/autoload.php';
+    require_once ( dirname( __FILE__ ) . '/vendor/autoload.php' );
     // Load 
     return new Elementor();
   }
