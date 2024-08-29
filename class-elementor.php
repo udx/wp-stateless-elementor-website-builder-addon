@@ -9,6 +9,8 @@ use wpCloud\StatelessMedia\Utility;
  * Class Elementor 
  */
 class Elementor extends Compatibility {
+  const STORAGE_PATH = 'elementor/';
+
   protected $id = 'elementor';
   protected $title = 'Elementor Website Builder';
   protected $constant = 'WP_STATELESS_COMPATIBILITY_ELEMENTOR';
@@ -26,6 +28,64 @@ class Elementor extends Compatibility {
     add_action('deleted_post', array($this, 'delete_css_files'));
     add_filter("elementor/settings/general/success_response_data", array($this, 'delete_global_css'), 10, 3);
     add_action('sm::pre::sync::nonMediaFiles', array($this, 'filter_css_file'), 10, 2);
+    add_filter('sm:sync::syncArgs', array($this, 'sync_args'), 10, 4);
+    add_filter('sm:sync::nonMediaFiles', array($this, 'get_sync_files'), 20);
+  }
+
+  /**
+   * @todo:remove
+   */
+  // public static function debug($data, $json = false) {
+  //   if (!WP_DEBUG) {
+  //     return;
+  //   }
+
+  //   if ( is_array($data) || is_object($data) || !is_string($data) ) {
+  //     if ( $json ) {
+  //       error_log( json_encode($data) );
+  //     } else {
+  //       error_log( print_r($data, true) );
+  //     }
+
+  //     return;
+  //   } 
+    
+  //   error_log($data);
+  // }
+
+
+  /**
+   * Get the position of 'elementor/' dir in the filename.
+   * 
+   * @param $name
+   * @return bool
+   */
+  protected function get_elementor_position($name) {
+    return strpos($name, self::STORAGE_PATH);
+  }
+
+  /**
+   * Move file from on GCS from default position to the bucket root.
+   * @param $source
+   * @param $destination
+   */
+  protected function possibly_move_file($source, $destination) {
+    $source = str_replace( ud_get_stateless_media()->get_gs_host(), ud_get_stateless_media()->get_gs_path(), $source );
+
+    if ( $source === $destination || !ud_get_stateless_media()->is_mode('stateless') ) {
+      return;
+    }
+
+    if ( !class_exists('\WP_Filesystem_Direct') ) {
+      require_once(ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php');
+      require_once(ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php');
+    }
+
+    $filesystem = new \WP_Filesystem_Direct( false );
+
+    if ( $filesystem->exists($source) ) {
+      $filesystem->move($source, $destination, true);
+    }
   }
 
   /**
@@ -37,17 +97,22 @@ class Elementor extends Compatibility {
    */
   public function sync_rewrite_url($url, $_, $__) {
     try {
-      if (strpos($url, 'elementor/') !== false) {
+      if ( $this->get_elementor_position($url) !== false) {
         $wp_uploads_dir = wp_get_upload_dir();
         $name = str_replace($wp_uploads_dir['baseurl'] . '/', '', $url);
 
         if ($name != $url) {
-          $absolutePath = $wp_uploads_dir['basedir'] . '/' . $name;
+          $absolutePath = apply_filters('wp_stateless_addon_files_root', ''); 
+          $absolutePath .= '/' . $name;
+
+          $this->possibly_move_file($url, $absolutePath);
+
           $name = apply_filters('wp_stateless_file_name', $name, 0);
+
           do_action('sm:sync::syncFile', $name, $absolutePath);
 
           $mode = ud_get_stateless_media()->get('sm.mode');
-          if ($mode && !in_array($mode, ['disabled', 'backup'])) {
+          if ( !ud_get_stateless_media()->is_mode( ['disabled', 'backup'] ) ) {
             $url = ud_get_stateless_media()->get_gs_host() . '/' . $name;
           }
         }
@@ -100,6 +165,7 @@ class Elementor extends Compatibility {
       // elementor/ css/ 'global.css'
       $name = $post_css::UPLOADS_DIR . $post_css::DEFAULT_FILES_DIR . $post_css->get_file_name();
       $name = apply_filters('wp_stateless_file_name', $name, 0);
+
       do_action('sm:sync::deleteFile', $name);
     } catch (\Exception $e) {
     }
@@ -159,5 +225,67 @@ class Elementor extends Compatibility {
       } catch (\Exception $e) {
       }
     }
+  }
+
+  /**
+   * Update args when uploading/syncing file to GCS.
+   * 
+   * @param array $args
+   * @param string $name
+   * @param string $file
+   * @param bool $force
+   * 
+   * @return array
+   */
+  public function sync_args($args, $name, $file, $force) {
+    if ( $this->get_elementor_position($name) !== 0 ) {
+      return $args;
+    }
+
+    if ( ud_get_stateless_media()->is_mode('stateless') ) {
+      $args['name_with_root'] = false;
+    }
+
+    $args['source'] = 'Elementor';
+    $args['source_version'] = defined( 'ELEMENTOR_VERSION' ) ? ELEMENTOR_VERSION : '';
+
+    return $args;
+  }
+
+  /**
+   * Get the list of files to sync.
+   * 
+   * @param array $file_list
+   * @return array
+   */
+  public function get_sync_files($file_list) {
+    if ( !method_exists('\wpCloud\StatelessMedia\Utility', 'get_files') ) {
+      Helper::log('WP-Stateless version too old, please update.');
+
+      return $file_list;
+    }
+
+    $dir = apply_filters('wp_stateless_addon_sync_files_path', '', self::STORAGE_PATH); 
+
+    if (is_dir($dir)) {
+      // Getting all the files from dir recursively.
+      $files = Utility::get_files($dir);
+
+      // validating and adding to the $files array.
+      foreach ($files as $file) {
+        if (!file_exists($file)) {
+          continue;
+        }
+
+        $file = self::STORAGE_PATH . str_replace( $dir, '', wp_normalize_path($file) );
+        $file = trim($file, '/');
+
+        if ( !in_array($file, $file_list) ) {
+          $file_list[] = $file;
+        }
+      }
+    }
+      
+    return $file_list;
   }
 }
