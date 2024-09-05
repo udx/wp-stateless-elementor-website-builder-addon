@@ -55,6 +55,7 @@ class ClassElementorTest extends TestCase {
 
   public function testShouldInitModule() {
     $elementor = new Elementor();
+
     $elementor->module_init([]);
 
     self::assertNotFalse( has_action('elementor/core/files/clear_cache', [ $elementor, 'delete_elementor_files' ]) );
@@ -64,6 +65,17 @@ class ClassElementorTest extends TestCase {
     
     self::assertNotFalse( has_filter('set_url_scheme', [ $elementor, 'sync_rewrite_url' ]) );
     self::assertNotFalse( has_filter('elementor/settings/general/success_response_data', [ $elementor, 'delete_global_css' ]) );
+    self::assertNotFalse( has_filter('sm:sync::syncArgs', [ $elementor, 'sync_args' ]) );
+    self::assertNotFalse( has_filter('sm:sync::nonMediaFiles', [ $elementor, 'get_sync_files' ]) );
+  }
+
+  public function testShouldCountHooks() {
+    $elementor = new Elementor();
+
+    Functions\expect('add_action')->times(4);
+    Functions\expect('add_filter')->times(4);
+
+    $elementor->module_init([]);
   }
 
   public function testShouldSyncAndRewriteUrl() {
