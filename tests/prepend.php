@@ -7,6 +7,7 @@ namespace wpCloud\StatelessMedia {
   class WPStatelessStub {
   
     const TEST_GS_HOST = 'https://google.com'; 
+    const TEST_GS_PATH = 'gs://google.com'; 
   
     private static $instance = null;
   
@@ -33,6 +34,18 @@ namespace wpCloud\StatelessMedia {
   
     public function get_gs_host(): string {
       return self::TEST_GS_HOST;
+    }
+
+    public function get_gs_path(): string {
+      return self::TEST_GS_PATH;
+    }
+
+    public function is_mode($key): ?bool {
+      if ( !is_array($key) ) {
+        $key = [$key];
+      }
+
+      return in_array( $this->options['sm.mode'], $key );
     }
   }
   
@@ -79,5 +92,11 @@ namespace Elementor\Core\Files\CSS {
     public function get_file_name() {
       return $this->file;
     }
+  }
+}
+
+namespace {
+  class WP_Filesystem_Direct {
+    public function __construct($param) {}
   }
 }
