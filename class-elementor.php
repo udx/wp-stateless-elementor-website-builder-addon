@@ -259,7 +259,7 @@ class Elementor extends Compatibility {
    */
   public function get_sync_files($file_list) {
     if ( !method_exists('\wpCloud\StatelessMedia\Utility', 'get_files') ) {
-      Helper::log('WP-Stateless version too old, please update.');
+      Helper::log('The WP-Stateless version is outdated. Please update.');
 
       return $file_list;
     }
