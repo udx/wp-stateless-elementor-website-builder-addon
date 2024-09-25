@@ -12,14 +12,14 @@ Provides compatibility between the [Elementor Website Builder](https://wordpress
 
 ### Support, Feedback, & Contribute
 
-We welcome community involvement via the [GitHub repository](https://github.com/udx/wp-stateless-elementor-addon).
+We welcome community involvement via the [GitHub repository](https://github.com/udx/wp-stateless-elementor-website-builder-addon).
 
 ### Frequently Asked Questions
 
 <details>
 <summary>Where can I submit feature requests or bug reports?</summary>
 
-We encourage community feedback and discussion through issues on the [GitHub repository](https://github.com/udx/wp-stateless-elementor-addon/issues).
+We encourage community feedback and discussion through issues on the [GitHub repository](https://github.com/udx/wp-stateless-elementor-website-builder-addon/issues).
 </details>
 
 <details>
