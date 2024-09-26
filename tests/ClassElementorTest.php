@@ -24,6 +24,7 @@ class ClassElementorTest extends TestCase {
   const CSS_FILE = 'post-15.css';
   const SRC_URL = self::UPLOADS_URL . '/' . self::CSS_FILE;
   const DST_URL = WPStatelessStub::TEST_GS_HOST . '/' . self::CSS_FILE;
+  const TEST_FILE = 'elementor/' . self::CSS_FILE;
   const TEST_UPLOAD_DIR = [
     'baseurl' => self::UPLOADS_URL,
     'basedir' => '/var/www/uploads'
@@ -55,15 +56,34 @@ class ClassElementorTest extends TestCase {
 
   public function testShouldInitModule() {
     $elementor = new Elementor();
+
     $elementor->module_init([]);
 
     self::assertNotFalse( has_action('elementor/core/files/clear_cache', [ $elementor, 'delete_elementor_files' ]) );
     self::assertNotFalse( has_action('save_post', [ $elementor, 'delete_css_files' ]) );
     self::assertNotFalse( has_action('deleted_post', [ $elementor, 'delete_css_files' ]) );
     self::assertNotFalse( has_action('sm::pre::sync::nonMediaFiles', [ $elementor, 'filter_css_file' ]) );
-    
+    self::assertNotFalse( has_action('wp_ajax_elementor_pro_forms_send_form', [ $elementor, 'remove_cache_busting' ]) );
+    self::assertNotFalse( has_action('wp_ajax_nopriv_elementor_pro_forms_send_form', [ $elementor, 'remove_cache_busting' ]) );
+    self::assertNotFalse( has_action('elementor_pro/forms/process', [ $elementor, 'process_files' ]) );
+
     self::assertNotFalse( has_filter('set_url_scheme', [ $elementor, 'sync_rewrite_url' ]) );
     self::assertNotFalse( has_filter('elementor/settings/general/success_response_data', [ $elementor, 'delete_global_css' ]) );
+    self::assertNotFalse( has_filter('sm:sync::syncArgs', [ $elementor, 'sync_args' ]) );
+    self::assertNotFalse( has_filter('sm:sync::nonMediaFiles', [ $elementor, 'get_sync_files' ]) );
+    self::assertNotFalse( has_filter('elementor_pro/forms/upload_path', [ $elementor, 'get_upload_path' ]) );
+    self::assertNotFalse( has_filter('elementor_pro/forms/upload_url', [ $elementor, 'get_upload_file_url' ]) );
+    self::assertNotFalse( has_filter('elementor_pro/icons_manager/custom_icons/dir', [ $elementor, 'get_upload_path' ]) );
+    self::assertNotFalse( has_filter('elementor_pro/icons_manager/custom_icons/url', [ $elementor, 'get_upload_file_url' ]) );
+  }
+
+  public function testShouldCountHooks() {
+    $elementor = new Elementor();
+
+    Functions\expect('add_action')->times(7);
+    Functions\expect('add_filter')->times(8);
+
+    $elementor->module_init([]);
   }
 
   public function testShouldSyncAndRewriteUrl() {
@@ -134,6 +154,79 @@ class ClassElementorTest extends TestCase {
 
     // Need any assertion, otherwise the test will be skipped
     $this->assertTrue(true);
+  }
+
+  public function testShouldUpdateArgs() {
+    $elementor = new Elementor();
+
+    $args = $elementor->sync_args([], self::TEST_FILE, '', false);
+
+    self::assertTrue( isset( $args['source'] ) );
+    self::assertTrue( isset( $args['source_version'] ) );
+    self::assertEquals( 'Elementor', $args['source'] );
+    self::assertFalse( isset( $args['name_with_root'] ) );
+  }
+
+  public function testShouldUpdateArgsStateless() {
+    $elementor = new Elementor();
+
+    ud_get_stateless_media()->set('sm.mode', 'stateless');
+
+    $args = $elementor->sync_args([], self::TEST_FILE, '', false);
+
+    self::assertTrue( isset( $args['source'] ) );
+    self::assertTrue( isset( $args['source_version'] ) );
+    self::assertEquals( 'Elementor', $args['source'] );
+    self::assertTrue( isset( $args['name_with_root'] ) );
+  }
+
+  public function testShouldNotUpdateArgs() {
+    $elementor = new Elementor();
+
+    self::assertEquals(
+      0,
+      count( $elementor->sync_args([], self::CSS_FILE, '', false) )
+    );
+  }
+
+  public function testShouldUpdateUploadPath() {
+    $elementor = new Elementor();
+
+    ud_get_stateless_media()->set('sm.mode', 'stateless');
+
+    self::assertEquals(
+      WPStatelessStub::TEST_GS_PATH,
+      $elementor->get_upload_path(self::TEST_UPLOAD_DIR['basedir'])
+    );
+  }
+
+  public function testShouldUpdateNotUploadPath() {
+    $elementor = new Elementor();
+
+    self::assertEquals(
+      self::TEST_URL,
+      $elementor->get_upload_path(self::TEST_URL)
+    );
+  }
+
+  public function testShouldUpdateUploadUrl() {
+    $elementor = new Elementor();
+
+    ud_get_stateless_media()->set('sm.mode', 'stateless');
+
+    self::assertEquals(
+      WPStatelessStub::TEST_GS_HOST,
+      $elementor->get_upload_file_url(self::TEST_UPLOAD_DIR['baseurl'])
+    );
+  }
+
+  public function testShouldUpdateNotUploadUrl() {
+    $elementor = new Elementor();
+
+    self::assertEquals(
+      self::TEST_URL,
+      $elementor->get_upload_file_url(self::TEST_URL)
+    );
   }
 }
 

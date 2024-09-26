@@ -1,12 +1,12 @@
 === WP-Stateless - Elementor Website Builder Addon ===
-Contributors: usability_dynamics, andypotanin, ideric, maxim.peshkov, planvova, obolgun
+Contributors: usability_dynamics, andypotanin, ideric, planvova, obolgun
 Donate link: https://udx.io
-Tags: elementor, editor, page builder, google, google cloud, google cloud storage, cdn, uploads, media, stateless, backup
+Tags: elementor website builder, elementor website builder addon extension, google cloud storage, stateless, wp-stateless
 License: GPLv2 or later
 Requires PHP: 8.0
 Requires at least: 5.0
-Tested up to: 6.4.3
-Stable tag: 0.0.1
+Tested up to: 6.6.2
+Stable tag: 0.0.2
 
 Provides compatibility between the Elementor Website Builder and the WP-Stateless plugins.
 
@@ -20,17 +20,17 @@ Provides compatibility between the [Elementor Website Builder](https://wordpress
 
 = Notes =
 
-* Tested with Elementor Website Builder plugin version 3.19.2
+* Tested with Elementor Website Builder plugin version 3.24.3
 
 = Support, Feedback, & Contribute =
 
-We welcome community involvement via the [GitHub repository](https://github.com/udx/wp-stateless-elementor-addon).
+We welcome community involvement via the [GitHub repository](https://github.com/udx/wp-stateless-elementor-website-builder-addon).
 
 == Frequently Asked Questions ==
 
 = Where can I submit feature requests or bug reports? =
 
-We encourage community feedback and discussion through issues on the [GitHub repository](https://github.com/udx/wp-stateless-elementor-addon/issues).
+We encourage community feedback and discussion through issues on the [GitHub repository](https://github.com/udx/wp-stateless-elementor-website-builder-addon/issues).
 
 = Can I test new features before they are released? =
 
@@ -43,6 +43,12 @@ To ensure new releases cause as little disruption as possible, we rely on early 
 == Upgrade Notice ==
 
 == Changelog ==
+
+= 0.0.2 =
+
+* FIX: improved compatibility with Stateless mode.
+* FIX: add support for Elementor Pro forms.
+* FIX: get the correct list of files for Compatibility Files Sync.
 
 = 0.0.1 =
 
