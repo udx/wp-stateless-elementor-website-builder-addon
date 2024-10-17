@@ -5,7 +5,7 @@
  * Plugin URI: https://stateless.udx.io/addons/elementor/
  * Description: Provides compatibility between the Elementor Website Builder and the WP-Stateless plugins.
  * Author: UDX
- * Version: 0.0.2
+ * Version: 0.0.3
  * License: GPL v2 or later
  * Text Domain: wp-stateless-elementor-website-builder-addon
  * Author URI: https://udx.io
