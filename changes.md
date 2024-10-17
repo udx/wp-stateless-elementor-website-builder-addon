@@ -1,3 +1,6 @@
+#### 0.0.4
+* FIX: processing background images in CSS files in Stateless mode.
+
 #### 0.0.3
 * FIX: processing background images in CSS files.
 
