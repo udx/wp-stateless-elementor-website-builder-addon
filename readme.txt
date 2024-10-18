@@ -6,7 +6,7 @@ License: GPLv2 or later
 Requires PHP: 8.0
 Requires at least: 5.0
 Tested up to: 6.6.2
-Stable tag: 0.0.3
+Stable tag: 0.0.4
 
 Provides compatibility between the Elementor Website Builder and the WP-Stateless plugins.
 
@@ -43,6 +43,10 @@ To ensure new releases cause as little disruption as possible, we rely on early 
 == Upgrade Notice ==
 
 == Changelog ==
+
+= 0.0.4 =
+
+* FIX: processing background images in CSS files in Stateless mode [771](https://github.com/udx/wp-stateless/issues/771), credits [@shon-everbridge](https://github.com/shon-everbridge).
 
 = 0.0.3 =
 
