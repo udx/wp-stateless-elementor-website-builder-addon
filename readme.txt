@@ -46,7 +46,7 @@ To ensure new releases cause as little disruption as possible, we rely on early 
 
 = 0.0.4 =
 
-* FIX: processing background images in CSS files in Stateless mode [771](https://github.com/udx/wp-stateless/issues/771), credits [@shon-everbridge](https://github.com/shon-everbridge).
+* FIX: processing background images in CSS files in Stateless mode [769](https://github.com/udx/wp-stateless/issues/769), credits [@NicolasCayet](https://github.com/NicolasCayet).
 
 = 0.0.3 =
 
