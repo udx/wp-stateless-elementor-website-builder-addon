@@ -1,5 +1,5 @@
 #### 0.0.4
-* FIX: processing background images in CSS files in Stateless mode.
+* FIX: processing background images in CSS files in Stateless mode [769](https://github.com/udx/wp-stateless/issues/769), credits [@NicolasCayet](https://github.com/NicolasCayet).
 
 #### 0.0.3
 * FIX: processing background images in CSS files.
